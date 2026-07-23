@@ -28,6 +28,9 @@ public class BorrowService {
   @Autowired
   private BookRepository bookRepository;
 
+  @Autowired
+  private EmailService emailService;
+
   public BorrowResponse borrowBook(Long userId, Long bookId) {
     User user = userRepository.findById(userId)
         .orElseThrow(() -> new UserNotFoundException("User not found with ID: " + userId));
@@ -37,6 +40,14 @@ public class BorrowService {
 
     if (!book.isAvailable()) {
       throw new IllegalArgumentException("Book is already borrowed");
+    }
+
+    // Check monthly limit (maximum 4 books per calendar month)
+    LocalDate startOfMonth = LocalDate.now().withDayOfMonth(1);
+    LocalDate endOfMonth = LocalDate.now().with(java.time.temporal.TemporalAdjusters.lastDayOfMonth());
+    List<BorrowRecord> monthlyBorrows = borrowRepository.findByUserIdAndBorrowDateBetween(userId, startOfMonth, endOfMonth);
+    if (monthlyBorrows.size() >= 4) {
+      throw new IllegalArgumentException("User has already reached the maximum limit of 4 borrowed books for this calendar month");
     }
 
     book.setAvailable(false);
@@ -51,6 +62,13 @@ public class BorrowService {
 
     BorrowRecord savedRecord = borrowRepository.save(record);
     logger.info("Book Borrowed: RecordID={}, UserEmail={}, BookTitle={}", savedRecord.getId(), user.getEmail(), book.getTitle());
+
+    // Send Email receipt
+    try {
+      emailService.sendBorrowReceiptEmail(user.getEmail(), user.getName(), book.getTitle(), savedRecord.getBorrowDate(), savedRecord.getDueDate());
+    } catch (Exception e) {
+      logger.error("Failed to send email to student {}: {}", user.getEmail(), e.getMessage());
+    }
 
     return convertToResponse(savedRecord);
   }

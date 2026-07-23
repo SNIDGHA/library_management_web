@@ -12,9 +12,10 @@ async function initBooksPage() {
   loadBooks();
 }
 
-async function loadBooks() {
+async function loadBooks(searchQuery = "") {
   try {
-    const books = await apiRequest(BOOK_API);
+    const url = searchQuery ? `${BOOK_API}?search=${encodeURIComponent(searchQuery)}` : BOOK_API;
+    const books = await apiRequest(url);
     const tbody = document.getElementById("booksTableBody");
     if (!tbody) return;
     tbody.innerHTML = "";
@@ -120,4 +121,15 @@ async function borrowBook(bookId) {
     showAlert("Book borrowed successfully!");
     loadBooks();
   } catch(err) {}
+}
+
+function handleSearch(e) {
+  e.preventDefault();
+  const query = document.getElementById("searchInput").value;
+  loadBooks(query);
+}
+
+function clearSearch() {
+  document.getElementById("searchInput").value = "";
+  loadBooks();
 }

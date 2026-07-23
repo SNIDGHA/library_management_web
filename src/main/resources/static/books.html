@@ -49,6 +49,17 @@
         <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addBookModal">➕ Add Book</button>
       </div>
     </div>
+
+    <!-- Search Bar -->
+    <div class="row mb-3">
+      <div class="col-md-6">
+        <form onsubmit="handleSearch(event)" class="d-flex gap-2">
+          <input type="text" id="searchInput" class="form-control" placeholder="Search by title, author, or ISBN...">
+          <button type="submit" class="btn btn-outline-primary">Search</button>
+          <button type="button" class="btn btn-outline-secondary" onclick="clearSearch()">Clear</button>
+        </form>
+      </div>
+    </div>
     
     <div class="card p-3">
       <div class="table-responsive">

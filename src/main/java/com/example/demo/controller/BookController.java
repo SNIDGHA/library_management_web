@@ -30,8 +30,14 @@ public class BookController {
 
   // Get All Books (Authenticated users)
   @GetMapping
-  public ResponseEntity<List<BookResponse>> getAllBooks() {
-    List<BookResponse> books = bookService.getAllBooks().stream()
+  public ResponseEntity<List<BookResponse>> getAllBooks(@RequestParam(required = false) String search) {
+    List<Book> booksList;
+    if (search != null && !search.trim().isEmpty()) {
+      booksList = bookService.searchBooks(search);
+    } else {
+      booksList = bookService.getAllBooks();
+    }
+    List<BookResponse> books = booksList.stream()
         .map(this::convertToResponse)
         .collect(Collectors.toList());
     return ResponseEntity.ok(books);
