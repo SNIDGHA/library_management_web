@@ -1,135 +1,337 @@
-# Library Management System 📚
+# 📚 Library Management System
 
-A comprehensive, production-grade Library Management System built with Spring Boot, Spring Security, JWT stateless authentication, Spring Data JPA, and MySQL. It features role-based access control (RBAC) for Librarians and Students, input validations, structured global exception handling, and a clean, responsive single-page frontend.
+A full-stack Library Management System built using **Java, Spring Boot, Spring Security, JWT, MySQL, and Vanilla JavaScript**. The application provides secure role-based access for **Students** and **Librarians**, making it easy to manage books, borrowing, returns, fines, and email notifications.
 
----
-
-## Features
-
-### Authentication & Authorization
-- **JWT Authentication**: Secure stateless authentication using JSON Web Tokens.
-- **BCrypt Password Hashing**: Secure password storage using strong hashing.
-- **Role-Based Access Control**:
-  - **LIBRARIAN**: Can add, update, and delete books, view all users, and view all borrow records.
-  - **STUDENT**: Can view books, borrow books, return books, and view their own borrow history.
-
-### Core Business Logic
-- **Book Catalog**: CRUD APIs to list, add, update, and delete books.
-- **Borrow & Return Flow**: Students can borrow available books (automatically sets availability to false) and return them.
-- **Fine Calculation**: Automated fine calculation upon book return (₹10/day for late returns past the 14-day threshold).
-
-### Quality & Operational Standards
-- **Global Exception Handling**: Returns clean, consistent error responses with appropriate HTTP status codes (e.g., 404 for Not Found, 400 for Validation failures).
-- **Bean Validation**: Strict input validation using standard Jakarta annotations (`@NotBlank`, `@Email`, `@Size`, etc.).
-- **SLF4J Logging**: Logging of business-critical operations like user registration, login, book additions, borrow transactions, and returns.
-- **Swagger Integration**: Interactive API documentation exposed at `/swagger-ui/index.html`.
+This project was built to simulate a real-world library workflow with authentication, authorization, and automated business logic.
 
 ---
 
-## Tech Stack
+# 🚀 Features
 
-- **Backend**: Java 17, Spring Boot, Spring Security, Spring Data JPA, Hibernate, SLF4J, Lombok.
-- **Database**: MySQL.
-- **API Documentation**: SpringDoc OpenAPI.
-- **Frontend**: HTML5, Vanilla JavaScript, Bootstrap 5.
+## 🔐 Secure Authentication
+
+- JWT-based authentication
+- BCrypt password encryption
+- Role-Based Access Control (RBAC)
+
+### Roles
+
+**👨‍🎓 Student**
+- Register and Login
+- View available books
+- Borrow books
+- Return books
+- View personal borrow history
+
+**👩‍💼 Librarian**
+- Add books
+- Update book details
+- Delete books
+- View all registered users
+- View all borrow records
 
 ---
 
-## Folder Structure
+# 📖 Book Management
 
-```text
-src/main/java/com/example/demo/
-├── config/             # Spring configuration (Security configuration)
-├── controller/         # REST API Controllers (endpoints)
-├── dto/                # Data Transfer Objects (request/response validation schemas)
-├── entity/             # JPA Database Entities
-├── exception/          # Custom exceptions and GlobalExceptionHandler
-├── repository/         # Spring Data JPA repositories
-├── security/           # JWT security filters, Token Provider, UserDetailsService
-├── service/            # Core business logic services
-└── DemoApplication.java
+- Add new books
+- Update existing books
+- Delete books
+- View complete catalogue
+- View only available books
+
+Book availability is automatically updated whenever a book is borrowed or returned.
+
+---
+
+# 📚 Borrow & Return System
+
+Students can borrow available books with a single API call.
+
+When a book is borrowed:
+
+- Borrow date is recorded
+- Due date is automatically set to 14 days later
+- Book availability changes to **Unavailable**
+
+When a book is returned:
+
+- Return date is stored
+- Book becomes available again
+- Fine is calculated automatically if returned after the due date
+
+Fine Policy:
+
+```
+₹10 per day after the due date
 ```
 
 ---
 
-## MySQL Configuration
+# 📧 Email Notifications
 
-Update your database credentials in `src/main/resources/application.properties`:
+The system automatically sends emails to students.
+
+### ✅ Borrow Receipt
+
+As soon as a book is borrowed, the student receives an email containing:
+
+- Student Name
+- Book Title
+- Borrow Date
+- Due Date
+- Library instructions
+
+---
+
+### ⏰ Due Date Reminder
+
+Students receive reminder emails before the due date so they don't forget to return the book on time.
+
+---
+
+### 💰 Late Return Notification
+
+If a book is returned after the due date, an email is sent containing:
+
+- Book Details
+- Borrow Date
+- Return Date
+- Due Date
+- Number of Late Days
+- Fine Amount
+
+This works like a digital receipt for every transaction.
+
+---
+
+# 🛡 Security
+
+- Spring Security
+- JWT Authentication
+- Stateless Sessions
+- Password Encryption using BCrypt
+- Protected REST APIs
+- Role-Based Authorization
+
+---
+
+# ✅ Input Validation
+
+The application validates incoming requests using Jakarta Bean Validation.
+
+Examples include:
+
+- Valid email addresses
+- Required fields
+- Password length validation
+- Empty value checks
+
+---
+
+# ⚠ Global Exception Handling
+
+A centralized exception handler returns meaningful error messages with proper HTTP status codes.
+
+Examples:
+
+- 400 Bad Request
+- 401 Unauthorized
+- 403 Forbidden
+- 404 Not Found
+
+---
+
+# 📑 API Documentation
+
+Swagger/OpenAPI has been integrated for testing APIs directly from the browser.
+
+```
+http://localhost:8080/swagger-ui.html
+```
+
+---
+
+# 🛠 Tech Stack
+
+### Backend
+
+- Java 17
+- Spring Boot
+- Spring Security
+- Spring Data JPA
+- Hibernate
+- JWT
+- Lombok
+- Maven
+
+### Database
+
+- MySQL
+
+### Frontend
+
+- HTML
+- CSS
+- Bootstrap 5
+- Vanilla JavaScript
+
+### Documentation
+
+- Swagger (SpringDoc OpenAPI)
+
+### Email Service
+
+- Spring Mail
+- Gmail SMTP
+
+---
+
+# 📂 Project Structure
+
+```
+src
+├── main
+│   ├── java/com/example/demo
+│   │   ├── config
+│   │   ├── controller
+│   │   ├── dto
+│   │   ├── entity
+│   │   ├── exception
+│   │   ├── repository
+│   │   ├── security
+│   │   ├── service
+│   │   └── DemoApplication.java
+│   │
+│   └── resources
+│       ├── static
+│       └── application.properties
+```
+
+---
+
+# ⚙ Database Configuration
+
+Configure your database inside:
+
+```
+src/main/resources/application.properties
+```
 
 ```properties
 spring.datasource.url=jdbc:mysql://localhost:3306/librarydb
-spring.datasource.username=YOUR_MYSQL_USERNAME
-spring.datasource.password=YOUR_MYSQL_PASSWORD
+spring.datasource.username=YOUR_USERNAME
+spring.datasource.password=YOUR_PASSWORD
 spring.jpa.hibernate.ddl-auto=update
 ```
 
-*Note: Ensure you create a database named `librarydb` in your MySQL server before running the application.*
+Create a database named:
+
+```
+librarydb
+```
+
+before starting the application.
 
 ---
 
-## How to Run
+# ▶ Running the Project
 
-### Prerequisite
-- Java 17 or higher
-- Maven 3.x (or use the included wrapper)
+### Prerequisites
+
+- Java 17+
+- Maven
 - MySQL Server
 
-### Commands
+### Clone the repository
 
-1. **Clone and Navigate**:
-   ```bash
-   cd demo
-   ```
+```bash
+git clone <repository-url>
+```
 
-2. **Build the Application**:
-   ```bash
-   ./mvnw clean package
-   ```
-   *(Use `mvnw.cmd` on Windows)*
+### Move into the project
 
-3. **Run the Application**:
-   ```bash
-   ./mvnw spring-boot:run
-   ```
+```bash
+cd demo
+```
 
-4. **Access the Portals**:
-   - **Frontend Dashboard**: [http://localhost:8080/](http://localhost:8080/)
-   - **Swagger OpenAPI Docs**: [http://localhost:8080/swagger-ui.html](http://localhost:8080/swagger-ui.html)
+### Build
 
----
+```bash
+./mvnw clean package
+```
 
-## API Documentation Summary
+Windows:
 
-### Auth Endpoints
-- `POST /users/register`: Register a new user (`STUDENT` or `LIBRARIAN`).
-- `POST /users/login`: Authenticate email and password, returns JWT token.
+```bash
+mvnw.cmd clean package
+```
 
-### Book Endpoints
-- `GET /books`: Get all books. (Authenticated)
-- `GET /books/available`: Get all available books. (Authenticated)
-- `POST /books`: Add a new book. (Librarian only)
-- `PUT /books/{id}`: Update a book's details. (Librarian only)
-- `DELETE /books/{id}`: Delete a book. (Librarian only)
+### Run
 
-### Borrow Endpoints
-- `POST /borrow/{userId}/{bookId}`: Borrow a book. (Student only, restricted to own user ID)
-- `POST /borrow/return/{borrowId}`: Return a book and calculate fines. (Student/Librarian)
-- `GET /borrow/history/{userId}`: View borrow history of a specific student. (Student owner / Librarian)
-- `GET /borrow/records`: View all borrow records. (Librarian only)
-
-### User Endpoints
-- `GET /users`: View all registered users. (Librarian only)
+```bash
+./mvnw spring-boot:run
+```
 
 ---
 
-## Screenshots Placeholder
+# 🌐 Access the Application
 
-*Place screenshots here to showcase your dashboard view, admin panel, and Swagger docs!*
+Frontend
+
+```
+http://localhost:8080/
+```
+
+Swagger
+
+```
+http://localhost:8080/swagger-ui.html
+```
 
 ---
 
-## Future Improvements
-- **Book Reservation**: Allow students to put hold reservations on currently borrowed books.
-- **Notification Service**: Automated email reminders for books approaching their due date.
-- **Renewals**: Enable students to extend the borrow duration online.
-- **Soft Deletion**: Keep records of books after removal from active circulation.
+# 📌 API Overview
+
+## Authentication
+
+- Register User
+- Login User
+
+## Books
+
+- Get All Books
+- Get Available Books
+- Add Book
+- Update Book
+- Delete Book
+
+## Borrow
+
+- Borrow Book
+- Return Book
+- Borrow History
+- View All Borrow Records
+
+## Users
+
+- View All Users
+
+---
+
+# 💡 Future Improvements
+
+- Book Reservation System
+- Online Renewal of Borrowed Books
+- Search & Filter Books
+- QR Code based Book Issue/Return
+- Dashboard Analytics
+- SMS Notifications
+- PDF Receipt Generation
+- Docker & CI/CD Deployment
+
+---
+
+# 👨‍💻 About the Project
+
+This project was built to strengthen my understanding of backend development using Spring Boot and to simulate a real-world library management workflow. It focuses on secure authentication, role-based authorization, clean REST APIs, database management, automated email notifications, and business logic such as borrowing, returning, and fine calculation.
