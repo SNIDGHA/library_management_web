@@ -31,18 +31,10 @@ public class BorrowController {
     return ResponseEntity.ok(response);
   }
 
-  // Return a book
+  // Return a book (Librarian only)
   @PostMapping("/return/{borrowId}")
   public ResponseEntity<BorrowResponse> returnBook(@PathVariable Long borrowId) {
-    var authentication = SecurityContextHolder.getContext().getAuthentication();
-    if (authentication == null) {
-      throw new UnauthorizedOperationException("User is not authenticated");
-    }
-    String currentPrincipalEmail = authentication.getName();
-    boolean isLibrarian = authentication.getAuthorities().stream()
-        .anyMatch(a -> a.getAuthority().equals("ROLE_LIBRARIAN"));
-
-    BorrowResponse response = borrowService.returnBook(borrowId, currentPrincipalEmail, isLibrarian);
+    BorrowResponse response = borrowService.returnBook(borrowId);
     return ResponseEntity.ok(response);
   }
 

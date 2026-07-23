@@ -55,13 +55,9 @@ public class BorrowService {
     return convertToResponse(savedRecord);
   }
 
-  public BorrowResponse returnBook(Long borrowId, String currentEmail, boolean isLibrarian) {
+  public BorrowResponse returnBook(Long borrowId) {
     BorrowRecord record = borrowRepository.findById(borrowId)
         .orElseThrow(() -> new BorrowRecordNotFoundException("Borrow record not found with ID: " + borrowId));
-
-    if (!isLibrarian && !record.getUser().getEmail().equalsIgnoreCase(currentEmail)) {
-      throw new UnauthorizedOperationException("You cannot return a book borrowed by another user");
-    }
 
     if (record.getReturnDate() != null) {
       throw new IllegalArgumentException("Book is already returned");
@@ -105,6 +101,15 @@ public class BorrowService {
   }
 
   private BorrowResponse convertToResponse(BorrowRecord record) {
+    Double fine = record.getFine();
+    if (record.getReturnDate() == null) {
+      long lateDays = ChronoUnit.DAYS.between(record.getDueDate(), LocalDate.now());
+      if (lateDays > 0) {
+        fine = (double) lateDays * 10.0;
+      } else {
+        fine = 0.0;
+      }
+    }
     return new BorrowResponse(
         record.getId(),
         record.getUser().getId(),
@@ -114,7 +119,7 @@ public class BorrowService {
         record.getBorrowDate(),
         record.getDueDate(),
         record.getReturnDate(),
-        record.getFine()
+        fine
     );
   }
 }

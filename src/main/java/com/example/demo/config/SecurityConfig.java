@@ -39,7 +39,7 @@ public class SecurityConfig {
         .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
         .authorizeHttpRequests(auth -> auth
             // Static files & Swagger
-            .requestMatchers("/", "/index.html", "/favicon.ico", "/js/**", "/css/**").permitAll()
+            .requestMatchers("/", "/index.html", "/register.html", "/dashboard.html", "/books.html", "/history.html", "/admin.html", "/favicon.ico", "/js/**", "/css/**").permitAll()
             .requestMatchers("/swagger-ui/**", "/v3/api-docs/**", "/swagger-ui.html").permitAll()
             // Auth endpoints
             .requestMatchers("/users/login", "/users/register").permitAll()
@@ -50,6 +50,7 @@ public class SecurityConfig {
             .requestMatchers(HttpMethod.GET, "/books", "/books/available").authenticated()
             // Borrow authorization
             .requestMatchers(HttpMethod.GET, "/borrow/records").hasRole("LIBRARIAN")
+            .requestMatchers(HttpMethod.POST, "/borrow/return/**").hasRole("LIBRARIAN")
             .requestMatchers(HttpMethod.GET, "/borrow/history/**").authenticated()
             .requestMatchers(HttpMethod.POST, "/borrow/**").authenticated()
             // User authorization
